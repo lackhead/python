@@ -1,12 +1,19 @@
 #!/usr/local/bin/python3
+#
 # Monthly programming challenges for the study.py group
-#  -- Use Python to see who is connected your network
 #
 # Get the local IP address and subnet mask and calculate the address
 # range in you network segment. Scan all the addresses and display
 # those that are alive.
 # Bonus points: Extract the IPs on a CSV file
 #
+# Author: Chad Lake (https://github.com/lackhead)
+#
+
+
+###############################################
+# Dependencies                                #
+###############################################
 import netifaces
 import argparse
 import sys
@@ -15,32 +22,38 @@ import subprocess
 import os
 
 
-# Global variables
-Interface = ''
-
-
+###############################################
+# Functions                                   #
+###############################################
 def ping_host(host):
-    # helper function: ping a host and return True/False if it responds
+    # ping a host and return True/False if it responds
     try:
-        return not subprocess.call(["ping", "-c 1", "-t 2", "-n", str(host)], stdout=subprocess.DEVNULL)
+        return not subprocess.call(["ping", "-c 1", "-t 1", "-n", str(host)], stdout=subprocess.DEVNULL)
     except KeyboardInterrupt:
         sys.exit()
 
 
+###############################################
+# Main program body                           #
+###############################################
+
+
+#
 # Deal with command line arguments
+#
 Parser = argparse.ArgumentParser(description="Check for IP addreses that respond on the network")
 Parser.add_argument("-i", "--interface", help="local network interface to check")
 Parser.add_argument("-f", "--file", help="output addresses to a CSV file")
 Parser.add_argument("-l", "--list", action='store_true', help="list available interfaces")
 Parser.add_argument("-q", "--quiet", action='store_true', help="do not display addresses that are being scanned")
 Args = Parser.parse_args()
-if Args.interface:
-    Interface = Args.interface
+# print out list of interfaces if that's what they want
 if Args.list:
     print(", ".join(netifaces.interfaces()))
     sys.exit()
-
-if Interface:
+# determine the interface to use
+if Args.interface:
+    Interface = Args.interface
     # validate that it's a real Interface
     try:
         testval = netifaces.interfaces().index(Interface)
@@ -55,7 +68,10 @@ else:
     except KeyError:
         print("No default interface found; please specify interface with the --interface option.")
 
-# find the address of this Interface
+
+#
+# From the interface, determine the network we're looking at
+#
 try:
     InterfaceAddresses = netifaces.ifaddresses(Interface)[netifaces.AF_INET]
 except KeyError:
@@ -68,7 +84,9 @@ MyNetmask = InterfaceAddresses[0]['netmask']
 MyNetwork = ipaddress.IPv4Network((MyAddress, MyNetmask), strict=False)
 
 
+#
 # Before we get started, see if we can open up any necessary files
+#
 if Args.file:
     try:
         FOUT = open(Args.file, 'w')
@@ -77,7 +95,9 @@ if Args.file:
         sys.exit(3)
 
 
+#
 # Walk thorugh the subnet and see who is alive
+#
 AliveIPs = []
 for NetIp in MyNetwork.hosts():
     if ping_host(NetIp):
@@ -88,12 +108,18 @@ for NetIp in MyNetwork.hosts():
         if not Args.quiet:
             print("{} did not respond".format(NetIp))
 
+
+#
 # If they want the output written to a CSV file, dup STDOUT
-if Args.file:
+#
+if FOUT:
     print(",".join(AliveIPs), file=FOUT)
 else:
     print("IPs in your network that are alive:")
     print("\n".join(AliveIPs))
 
-# we're out of here
+
+###############################################
+# We're done                                  #
+###############################################
 sys.exit()
