@@ -21,4 +21,7 @@ Another monthly challenge from the [September 2017 py-study-group challenge](htt
 >   * NamedPipe.__init__() method should accept one argument - the path of the named pipe (eg. '/tmp/mypipe' on Linux)
 >   * NamedPipe should have three methods: read(), write() and close(). Both client.py and server.py should use NamedPipe for communication.
 
+In solving the first problem I deviated a bit from the challenge and had the user input the message as well as having both
+the server and the client loop so that the one-way chat session could continue indefiniately.
+
 
