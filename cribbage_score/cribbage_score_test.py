@@ -104,11 +104,11 @@ class TestCribbageHand(object):
 
     def test_cribhand_flush(self):
         ch = CribbageHand("3S", "4C", "7C", "JC", "5C")
-        assert ch.flush == 4
+        assert len(ch.flush) == 4
         ch = CribbageHand("3C", "4S", "7C", "JC", "5C")
-        assert ch.flush == 0
+        assert len(ch.flush) == 0
         ch = CribbageHand("JS", "4S", "7S", "QS", "5S")
-        assert ch.nobs == 5
+        assert len(ch.flush) == 5
 
     def test_cribhand_nobs(self):
         ch = CribbageHand("3S", "4C", "7H", "JS", "5C")
@@ -135,8 +135,7 @@ class TestCribbageHand(object):
         assert ch.score == 7
         ch = CribbageHand("10H", "7H", "8H", "JH", "5C")
         assert ch.score == 7
-        ch = CribbageHand("3S", "4C", "7H", "JS", "2C")
+        ch = CribbageHand("3S", "4C", "7H", "JH", "QC")
         assert ch.score == 0
-
-
-
+        ch = CribbageHand("10D", "JD", "JH", "10C", "QC")
+        assert ch.score == 17
