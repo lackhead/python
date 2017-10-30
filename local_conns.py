@@ -14,12 +14,12 @@
 ###############################################
 # Dependencies                                #
 ###############################################
-import netifaces
 import argparse
-import sys
 import ipaddress
-import subprocess
+import netifaces
 import os
+import subprocess
+import sys
 
 
 ###############################################

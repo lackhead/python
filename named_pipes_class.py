@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 #
-# Monthly programming challenges for the study.py group
+# Monthly programming challenges for the study.py group. This solution uses a class structure.
 #
 # Use named pipes to pass data between two Python scripts.
 #
@@ -38,6 +38,57 @@ import os
 import signal
 import stat
 import sys
+
+
+###############################################
+# Classes                                     #
+###############################################
+class NamedPipe():
+
+    def __init__(self, filename):
+        self.filename = str(filename)
+        self.FIFO = ""
+
+    def __repr__(self):
+        return 'NamedPipe({})'.format(self.filename)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *Args):
+        if self.FIFO:
+            self.FIFO.close()
+        # try to remove the pipe
+        try:
+            os.unlink(self.filename)
+        except OSError as oe:
+            if oe.errno != errno.ENOENT:
+                raise
+
+    def read(self):
+        # create the pipe if necessary
+        try:
+            os.mkfifo(self.filename)
+        except OSError as oe:
+            if oe.errno != errno.EEXIST:
+                raise
+        # open it up for reading if necessary
+        if not self.FIFO:
+            self.FIFO = open(self.filename)
+        # read and return
+        return self.FIFO.read().strip()
+
+    def write(self, msg):
+        # create the pipe if necessary
+        try:
+            os.mkfifo(self.filename)
+        except OSError as oe:
+            if oe.errno != errno.EEXIST:
+                raise
+        # open it up for reading if necessary
+        if not self.FIFO:
+             self.FIFO = open(self.filename, 'w')
+        print(msg, file=self.FIFO)
 
 
 ###############################################
@@ -87,13 +138,6 @@ elif ((not Args.message) and (not Args.server)):
 # and loop reading and outputting until ^D
 if (Args.server):
 
-    # create the pipe
-    try:
-        os.mkfifo(Args.file)
-    except OSError as oe:
-        if oe.errno != errno.EEXIST:
-            raise
-
     # keep looping and printing until ^C is hit
     print("Hit ^C to quit the server")
     # Save the original interrupt
@@ -105,16 +149,14 @@ if (Args.server):
     # close the pipe
     print("Listening...", flush=True)
     while True:
-        with open(Args.file) as FIFO:
-            print("Message received: {}".format(FIFO.read().rstrip()))
+        with NamedPipe(Args.file) as MyNamedPipe:
+            print("Message received: {}".format(MyNamedPipe.read()))
 
 
 ###############################################
 # Client Functionality                        #
 ###############################################
-# The client should just look to see if the pipe exists
-# and send its message to it
 if (Args.message):
-
-    with open(Args.file, "w") as FIFO:
-        print(Args.message, file=FIFO)
+    # simple- just print out the messageb
+    with NamedPipe(Args.file) as MyNamedPipe:
+        MyNamedPipe.write(Args.message)

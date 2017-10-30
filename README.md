@@ -6,7 +6,8 @@ A place to keep Python code not for a specific project (learning, experimentatio
 My first Python script ever! I wrote this as a solution to one of the challenges
 from the [September 2017 py-study-group challenge](https://github.com/py-study-group/challenges/blob/master/September/challenges4.md). The text is as follows:
 > Use Python to see who is connected your network
-> Get the local IP address and subnet mask and calculate the address range in you network segment. Scan all the addresses and display those that are alive.
+> Get the local IP address and subnet mask and calculate the address range in your network
+> segment. Scan all the addresses and display those that are alive.
 > Bonus Points: Extract the IPs on a CSV file
 
 ## named_pipes
@@ -24,4 +25,9 @@ Another monthly challenge from the [September 2017 py-study-group challenge](htt
 In solving the first problem I deviated a bit from the challenge and had the user input the message as well as having both
 the server and the client loop so that the one-way chat session could continue indefiniately.
 
+## Cribbage Score
+
+I found this one on Reddit's [/r/dailyprogrammer](http://www.reddit.com/r/dailyprogrammer): [Cribbage Hand Scorer](https://www.reddit.com/r/dailyprogrammer/comments/75p1cs/20171011_challenge_335_intermediate_scoring_a/).
+The idea is to create a program to calculate the score of a Cribbage hand (see the (Rules of Cribbage)[http://en.wikipedia.org/wiki/Rules_of_cribbage]). Included
+in the directory is a pytest tile for verification of functionality.
 
